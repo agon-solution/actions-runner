@@ -145,7 +145,7 @@ $ docker compose -f ~/nginx-by-ocio-runner/docker-compose.yml up -d
 
 ## Test The GitHub Actions Runner
 
-1. Edit the `index.html` file inside this repository.
+1. Edit the `index.html` file inside the forked repository.
 2. Commit and push the changes.
 3. Wait for the runner to pick up the job and see the changes.
 4. Check that the Nginx container is serving the updated `index.html` by visiting `http://<ip>:9988` in a Web browser.
