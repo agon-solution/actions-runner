@@ -73,8 +73,8 @@ $ tar xzf ./actions-runner-linux-x64-2.322.0.tar.gz
 ### Add A New self-hosted GitHub Actions Runner On GitHub, For The Forked Repository
 
 1. Go to the forked repository in GitHub (in your user account).
-2. Go to `Settings` -> `Actions` -> `Runners` -> `Add runner`.
-3. Copy the token.
+2. Go to `Settings` -> `Actions` -> `Runners` -> `New self-hosted runner`.
+3. Copy the token which is displayed on the screen, in the configure section.
 
 ### Configure The GitHub Actions Runner
 
@@ -91,11 +91,27 @@ For the questions, make use of default values, except for the runner name. For t
 ### Clone The Forked Repository On The Target Machine
 
 ```bash
+# Change to the ocio-runner user's home directory
+$ cd ~
 # Clone the forked repository on the target machine
 $ git clone git@github.com:<user>/actions-runner.git actions-runner-repository
 # Change to the repository directory
 $ cd actions-runner-repository
 ```
+
+Replace `<user>` with your GitHub username.
+
+**Note:** You should first create a new SSH key pair on the target machine for the `ocio-runner` user, and add the
+public key to your GitHub account. You can create a new SSH key pair as follows:
+
+```bash
+# Create a new SSH key pair
+$ ssh-keygen -t ed25519 -C "<email_address>"
+```
+
+Replace `<email_address>` with your email address.
+
+Then, add the public key to your GitHub account by copying the content of the `~/.ssh/id_ed25519.pub` file.
 
 ### Setup A Systemd Service Configuration For The GitHub Actions Runner
 
