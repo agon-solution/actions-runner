@@ -1,0 +1,47 @@
+# This workflow will deploy the index.html file to the Nginx container.
+#
+# Author: Laurent DECLERCQ, AGON PARTNERS INNOVATION AG <l.declercq@agon-innovation.ch>
+# Version 20250202
+
+# Name of the workflow.
+name: Deploy An HTML File To Nginx Container
+
+# When to trigger the workflow.
+on:
+  # Trigger the workflow on push events to the main branch.
+  push:
+    branches:
+      - main
+
+# Workflow level environment variables.
+# These variables are available to all jobs in the workflow.
+env:
+  NGINX_CONTAINER_NAME: nginx-by-ocio-runner
+
+# Jobs in the workflow.
+jobs:
+  # Deployments job.
+  deploy:
+    # Use a self-hosted runner.
+    runs-on: self-hosted
+    # Job steps.
+    steps:
+    # Checkout the repository.
+    - name: Check out the repository
+      uses: actions/checkout@v2
+    # Get the container ID of the container if it is running, otherwise exit the job with a failure status.
+    - name: Get the container ID of the container if it is running, otherwise exit the job with a failure status
+      id: get-nginx-container-id
+      run: |
+        echo "NGINX_CONTAINER_ID=$(docker ps --quiet --filter name=$NGINX_CONTAINER_NAME)" >> $GITHUB_ENV
+        if [ -z "$NGINX_CONTAINER_ID" ]; then
+          echo "Container $NGINX_CONTAINER_NAME is not running. Exiting the job with a failure status."
+          exit 1  
+        fi
+        echo "Found ID $NGINX_CONTAINER_ID for container $NGINX_CONTAINER_NAME"
+    # Copy the index.html file to the Nginx container.
+    - name: Copy the index.html file to the Nginx container
+      id: copy-index-html-to-nginx-container
+      # Copy the index.html file to the Nginx container using docker cp command.
+      run: |
+        docker cp --quiet index.html $NGINX_CONTAINER_ID:/usr/share/nginx/html/index.html

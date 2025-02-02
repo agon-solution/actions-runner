@@ -1,0 +1,14 @@
+# Sample configuration for running nginx container.
+#
+# This configuration will run nginx container and expose it on port 9988.
+#
+# Author: Laurent DECLERCQ, AGON PARTNERS INNOVATION AG <l.declercq@agon-innovation.ch>
+# Version 20250202
+
+services:
+ nginx-by-ocio-runner:
+  container_name: nginx-by-ocio-runner
+  image: nginx:latest
+  restart: unless-stopped
+  ports:
+   - "9988:80"

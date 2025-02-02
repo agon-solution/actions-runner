@@ -1,0 +1,22 @@
+# Systemd service file for the Ocio Actions Runner.
+#
+# Author: Laurent DECLERCQ, AGON PARTNERS INNOVATION AG <l.declercq@agon-innovation.ch>
+# Version 20250202
+
+[Unit]
+Description=Ocio Actions Runner (GitHub self-hosted runner)
+After=network.target
+
+[Service]
+User=ocio-runner
+WorkingDirectory=/home/ocio-runner/actions-runner
+ExecStart=/home/ocio-runner/actions-runner/run.sh
+Restart=always
+RestartSec=3
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutSec=30
+SyslogIdentifier=ocio-actions-runner
+
+[Install]
+WantedBy=multi-user.target
