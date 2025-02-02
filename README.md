@@ -19,7 +19,7 @@ The job will exit with an error if the Nginx container is not running.
 - A recent Debian-based system (e.g., Debian Bookworm) with an unprivileged `ocio-runner` user account
   (for the given example), and which can `sudo to root.
 - A Docker installation on the system.
-- cURl, tar, and git installed on the system.
+- cURL, tar, and git installed on the system.
 
 You can install the required packages on a Debian-based system as follows:
 
@@ -45,9 +45,7 @@ docker command using `root` user privileges.
 
 ## Fork The Repository To Your GitHub Account
 
-Fork this repository to your `GitHub` account.
-
-Replace `<user>` with your GitHub username.
+Fork this repository to your `GitHub` account. Replace `<user>` with your GitHub username.
 
 ## GitHub Actions Runner Installation And Configuration
 
@@ -107,9 +105,9 @@ $ sudo cp -a ocio-actions-runner.service /etc/systemd/system
 # Reload the systemd configuration
 $ sudo systemctl daemon-reload
 # Enable the service
-$ sudo systemctl enable ocio-actions-runner.service
+$ sudo systemctl enable ocio-actions-runner
 # Start the service
-$ sudo systemctl start ocio-actions-runner.service
+$ sudo systemctl start ocio-actions-runner
 ```
 
 ## Start An Nginx Container For Testing Purposes
@@ -140,8 +138,8 @@ Replace `<ip>` with the IP address of the machine running the Nginx container.
 
 ## Authors
 
-> Laurent DECLERCQ, AGON PARTNERS INNOVATION AG <l.declercq@agon-innovation.ch>, for AGON PARTNERS SOLUTION GmbH
+> Laurent DECLERCQ, AGON PARTNERS INNOVATION AG <l.declercq@agon-innovation.ch>, for AGON PARTNERS SOLUTION GmbH.
 
 ## License
 
-> © Copyright - [AGON PARTNERS SOLUTION GmbH](https://agon-solution.ch)
+> © 2025 [AGON PARTNERS SOLUTION GmbH](https://agon-solution.ch). All rights reserved.
