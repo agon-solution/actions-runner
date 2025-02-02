@@ -45,7 +45,7 @@ docker command using `root` user privileges.
 
 ## Fork The Repository To Your GitHub Account
 
-Fork this repository to your `GitHub` account. Replace `<user>` with your GitHub username.
+Fork this repository to your `GitHub` account. The forked repository will be used to test the `GitHub Actions Runner`.
 
 ## GitHub Actions Runner Installation And Configuration
 
