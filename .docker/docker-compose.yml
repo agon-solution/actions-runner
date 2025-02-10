@@ -1,0 +1,39 @@
+# Docker compose file for building and running the GitHub Actions runner.
+#
+# Build command: docker compose build --no-cache --pull
+#
+# Run command: `docker compose up -d` for running the container in detached mode.
+# Run command: `docker compose run --rm -ti --remove-orphans github-actions-runner` for running the container in interactive mode.
+#
+# Author: Laurent DECLERCQ, AGON PARTNERS INNOVATION AG <l.declercq@agon-innovation.ch>
+# Version: 20250210
+
+services:
+  github-actions-runner:
+    container_name: github-actions-runner
+    image: hub.agon-partners-innovation.ch/agon-innovation/github-actions/runner:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Target OS for the runner.
+        - TARGETOS=linux
+        # Target architecture for the runner.
+        - TARGETARCH=amd64
+        # GitHub Actions runner version.
+        - RUNNER_VERSION=2.322.0
+        # Docker version.
+        - DOCKER_VERSION=27.5.1
+        # Docker Compose version.
+        - BUILDX_VERSION=0.20.1
+    restart: unless-stopped
+    environment:
+      # GitHub Actions runner URL.
+      RUNNER_URL: "${RUNNER_URL}"
+      # GitHub Actions runner name.
+      RUNNER_NAME: "${RUNNER_NAME}"
+      # GitHub Actions runner token.
+      RUNNER_TOKEN: "${RUNNER_TOKEN}"
+    volumes:
+      # Docker in Docker (We need to mount the Docker socket to the container).
+      - /var/run/docker.sock:/var/run/docker.sock

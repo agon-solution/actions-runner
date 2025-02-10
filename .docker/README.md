@@ -2,18 +2,18 @@
 
 This repository demonstrates how to install and configure a
 [self-hosted Actions Runner](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners)
-on a Debian-based system. The `actions runner` is configured to run jobs for a `GitHub repository`.
+inside a Docker container. The `actions runner` is configured to run jobs for a `GitHub repository`.
 
 This repository provides
 a [GitHub Actions workflow](https://docs.github.com/en/actions/writing-workflows/about-workflows)
 that is triggered by a push event on the `main` branch. It updates the `index.html` file in a
 [Docker Nginx container](https://hub.docker.com/_/nginx).
 
-The GitHub Actions workflow assumes that the Nginx container is running on the same machine as the GitHub actions
-runner.  The job will exit with an error if the Nginx container is not running.
+The GitHub Actions workflow assumes that the `Nginx container` is running on the same machine as the GitHub actions
+runner. The job will exit with an error if the Nginx container is not running.
 
-If you prefer run the GitHub Actions Runner in a Docker container, please refer to the dedicated
-[README.md](.docker/README.md) file instead.
+Note: If you prefer run the GitHub Actions Runner on the host machine, please refer to the dedicated
+[README.md](../README.md) file instead.
 
 ## Pre-Requisites
 
@@ -21,7 +21,7 @@ If you prefer run the GitHub Actions Runner in a Docker container, please refer 
 - A recent Debian-based system (e.g., Debian Bookworm) with an unprivileged `ocio-runner` user account
   (for the given example), and which can `sudo to root.
 - A Docker installation on the system.
-- cURL, Tar, and Git installed on the system.
+- Git installed on the system.
 
 You can install the required packages on a Debian-based system as follows:
 
@@ -29,7 +29,7 @@ You can install the required packages on a Debian-based system as follows:
 # Update the package list.
 $ sudo apt update
 # Install the required packages.
-$ sudo apt install -y curl tar git
+$ sudo apt install -y git
 ```
 
 ### Docker Stack Installation
@@ -53,25 +53,7 @@ Fork this repository to your `GitHub` account. The forked repository will be use
 ## GitHub Actions Runner Installation And Configuration
 
 For the given example, it is assumed that an unprivileged UNIX user named `ocio-runner` exists on the system. If you
-want to use another user, make sure to replace `ocio-runner` with the desired username in the following steps, including
-in the `ocio-runner.service` file (`user`, `WorkingDirectory`, and `ExecStart` fields).
-
-### Download And Extract The GitHub Actions Runner Package
-
-On the target machine (x64 assumed), download the runner package and extract it as follows:
-
-```bash
-# Change to the ocio-runner user's home directory.
-$ cd ~
-# Create a dedicated directory for the actions runner.
-$ mkdir actions-runner && cd actions-runner
-# Download the latest action runner package for Linux x64.
-$ curl -o actions-runner-linux-x64-2.322.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz
-# Extract the installer.
-$ tar xzf ./actions-runner-linux-x64-2.322.0.tar.gz
-```
-
-**Note:** Don't forget to check for latest version of the `actions runner`.
+want to use another user, make sure to replace `ocio-runner` with the desired username in the following steps.
 
 ### Add A New self-hosted GitHub Actions Runner On GitHub, For The Forked Repository
 
@@ -79,26 +61,14 @@ $ tar xzf ./actions-runner-linux-x64-2.322.0.tar.gz
 2. Go to `Settings` -> `Actions` -> `Runners` -> `New self-hosted runner`.
 3. Copy the token which is displayed on the screen, in the configure section.
 
-### Configure The GitHub Actions Runner
-
-```bash
-# Configure the actions runner.
-$ ./config.sh --url git@github.com:<user>/actions-runner.git --token <token>
-```
-
-Replace `<user>` with your GitHub username and `<token>` with the token copied from the GitHub repository settings.
-
-For the questions, make use of default values, except for the runner name. For the given example, the runner name is
-`ocio-runner`.
-
 ### Clone The Forked Repository On The Target Machine
 
 ```bash
-# Change to the ocio-runner user's home directory.
+# Change to the ocio-runner user's home directory
 $ cd ~
-# Clone the forked repository on the target machine.
-$ git clone https://github.com/<user>/actions-runner actions-runner-repository
-# Change to the repository directory.
+# Clone the forked repository on the target machine
+$ git clone git@github.com:<user>/actions-runner.git actions-runner-repository
+# Change to the repository directory
 $ cd actions-runner-repository
 ```
 
@@ -108,7 +78,7 @@ Replace `<user>` with your GitHub username.
 public key to your GitHub account. You can create a new SSH key pair as follows:
 
 ```bash
-# Create a new SSH key pair.
+# Create a new SSH key pair
 $ ssh-keygen -t ed25519 -C "<email_address>"
 ```
 
@@ -116,23 +86,30 @@ Replace `<email_address>` with your email address.
 
 Then, add the public key to your GitHub account by copying the content of the `~/.ssh/id_ed25519.pub` file.
 
-### Setup A Systemd Service Configuration For The GitHub Actions Runner
+### Build The GitHub Actions Runner Docker Image
 
 ```bash
-# Copy the service file to /etc/systemd/system/
-$ sudo cp -a ~/actions-runner-repository/ocio-actions-runner.service /etc/systemd/system
-# Reload the systemd configuration.
-$ sudo systemctl daemon-reload
-# Enable the service.
-$ sudo systemctl enable ocio-actions-runner
-# Start the service.
-$ sudo systemctl start ocio-actions-runner
+# Change to the runner directory inside the repository.
+cd ~/actions-runner-repository/runner
+# Build the GitHub Actions Runner Docker image.
+docker compose build --no-cache --pull
+```
+
+### Set The GitHub Actions Runner Service
+Edit the ~/actions-runner-repository/runner/.env file and set the following environment variables:
+
+- RUNNER_UR: The URL of the GitHub repository.
+- RUNNER_TOKEN: The token copied from the GitHub repository settings.
+
+```bash
+# Start the GitHub Actions Runner.
+$ docker compose up -d
 ```
 
 ## Start An Nginx Container For Testing Purposes
 
-On the same machine as the actions runner, start a `Nginx` container for testing purposes. The container will serve the
-content of the `index.html` file from this repository.
+Start a `Nginx` container for testing purposes. The container will serve the  content of the `index.html` file from this
+repository.
 
 ```bash
 # Start the Nginx container in detached mode.
